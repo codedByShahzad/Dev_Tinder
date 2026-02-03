@@ -3,13 +3,20 @@ const express = require("express")
 const app = express()
 const PORT = 8000
 
-// Request Handler
-app.use("/test",(req, res)=>{
-    res.send("Hello the test Data is Comming from the Server")
+// Request Handler (Order of the Routes Matters)
+
+
+
+app.get("/user/:name/:age/:role", (req, res)=>{
+    console.log(req.params)
+    res.send("User Data us Avalible")
 })
-app.use("/",(req, res)=>{
-    res.send("Data is Comming from the Server for Home page")
+
+app.post("/user", (req, res)=>{
+    res.send("Send User Data ")
 })
+
+
 
 
 app.listen(PORT, ()=>{
