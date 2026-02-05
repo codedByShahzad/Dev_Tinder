@@ -9,15 +9,10 @@ dotenv.config()
 const app = express()
 const PORT = process.env.PORT
 
+app.use(express.json())
+
 app.post("/signup", async (req, res)=>{
-    const userData = {
-        firstName: "Naqash",
-        lastName: "Sohail",
-        email: "naqash@gmail.com",
-        password: "naqash1678",
-        age: 19,
-        gender: "Male"
-    }
+    const userData = req.body
 
     //Creating a new instence of the User Model
     const user = new User(userData)
@@ -28,7 +23,7 @@ app.post("/signup", async (req, res)=>{
     } catch(err){
         res.status(499).send("Error Saving the User : ", err)
     }
-
+   
 })
 
 connectDB().then(()=>{
