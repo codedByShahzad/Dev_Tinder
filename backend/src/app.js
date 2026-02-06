@@ -11,18 +11,29 @@ const PORT = process.env.PORT;
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  const userData = req.body;
-
-  //Creating a new instence of the User Model
-  const user = new User(userData);
-
   try {
+    const user = new User(req.body);
+    
+    
+    if (req.body.skills?.length > 20) {
+  throw new Error("Cannot add more than 20 skills");
+}
+
+    
     await user.save();
-    res.send("User Added Successfully");
+    res.status(201).json({
+      success: true,
+      message: "User Added Successfully",
+    });
   } catch (err) {
-    res.status(499).send("Error Saving the User : ", err);
+    res.status(500).json({
+      success: false,
+      message: "Error saving the user",
+      error: err.message, // 👈 THIS shows in Postman
+    });
   }
 });
+
 // Get specific user by email
 app.get("/user", async (req, res) => {
   const userEmail = req.body.email;
@@ -36,7 +47,7 @@ app.get("/user", async (req, res) => {
     res.send(filteredUser);
     console.log(filteredUser);
   } catch (err) {
-    res.status(400).send("Error Getting a User: ", err);
+    res.status(400).send("Error Getting a User: ", err.message);
   }
 });
 
@@ -50,7 +61,7 @@ app.get("/all-users", async (req, res) => {
     }
     res.send(allUsers);
   } catch (err) {
-    res.status(400).send("Error Getting a User: ", err);
+    res.status(400).send("Error Getting a User: ", err.message);
   }
 });
 
@@ -63,19 +74,58 @@ app.delete("/user", async (req, res) => {
     const user = await User.findByIdAndDelete(userId);
     res.send("User Deleted Successfully");
   } catch (err) {
-    res.status(400).send("Error Getting a User: ", err);
+    res.status(400).send("Error Getting a User: ", err.message);
   }
 });
 
 // Update the user
 app.patch("/user", async (req, res) => {
-  const userId = req.body.userId;
-  const data = req.body;
+  const { userId, ...data } = req.body;
+
   try {
-    const updateUser = await User.findByIdAndUpdate(userId, data);
-    res.send("User Updated Successfully");
+    const allowedUpdates = [
+      "photoUrl",
+      "about",
+      "gender",
+      "age",
+      "skills",
+      "firstName",
+      "lastName",
+    ];
+
+    const isUpdateAllowed = Object.keys(data).every((k) => {
+      allowedUpdates.includes(k);
+    });
+
+    if (!isUpdateAllowed) {
+      throw new Error("Update not Allowed");
+    }
+
+    if(data.skills.length > 20){
+      throw new Error ("Cannot add more than 20 skills")
+    }
+    const updatedUser = await User.findByIdAndUpdate(userId, data, {
+      new: true, // return updated document
+      runValidators: true, // ✅ run schema validators on update
+    });
+
+    if (!updatedUser) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.json({
+      success: true,
+      message: "User Updated Successfully",
+      user: updatedUser,
+    });
   } catch (err) {
-    res.status(400).send("Error Getting a User: ", err);
+    res.status(400).json({
+      success: false,
+      message: "Validation / Update error",
+      error: err.message,
+    });
   }
 });
 
@@ -87,5 +137,5 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.log("Database Cannot be Connected", err);
+    console.log("Database Cannot be Connected", err.message);
   });
