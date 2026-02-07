@@ -2,6 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import { User } from "./models/userModel.js";
+import { validateSignUp } from "./utils/userValidation.js";
+import bcrypt from "bcrypt"
 
 dotenv.config();
 
@@ -11,15 +13,30 @@ const PORT = process.env.PORT;
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
+  // Step 1 => Validation of the Data comming form the Body Dont trust the req.body because the attackers can send millecious data
   try {
-    const user = new User(req.body);
-    
-    
-    if (req.body.skills?.length > 20) {
-  throw new Error("Cannot add more than 20 skills");
-}
+    validateSignUp(req);    
 
-    
+    const {firstName, lastName, email, password, skills, age, gender} = req.body
+    // Step 2 => Encrypt the password
+
+    const passwordHash = await bcrypt.hash(password, 10)
+
+    // Step 3 => Then you can add the user in the Database after the
+    const user = new User({
+      firstName, 
+      lastName,
+      email,
+      skills,
+      age,
+      gender,
+      password: passwordHash
+    });
+
+    if (req.body.skills?.length > 20) {
+      throw new Error("Cannot add more than 20 skills");
+    }
+
     await user.save();
     res.status(201).json({
       success: true,
@@ -33,6 +50,36 @@ app.post("/signup", async (req, res) => {
     });
   }
 });
+
+app.post("/login", async (req, res)=>{
+  try{
+    const {email, password} = req.body
+    if (!validator.isEmail(email)) {
+      throw new Error("Please Enter a Valid Email")
+    }
+
+    const user = await User.findOne({email: email})
+
+    if (!user) {
+      throw new Error ("Email Not Found in Database")
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password)
+    if(isPasswordValid){
+      res.send("Login Successfull!!! ")
+    }
+
+
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error saving the user",
+      error: err.message, // 👈 THIS shows in Postman
+    });
+  }
+
+
+})
 
 // Get specific user by email
 app.get("/user", async (req, res) => {
@@ -101,8 +148,8 @@ app.patch("/user", async (req, res) => {
       throw new Error("Update not Allowed");
     }
 
-    if(data.skills.length > 20){
-      throw new Error ("Cannot add more than 20 skills")
+    if (data.skills.length > 20) {
+      throw new Error("Cannot add more than 20 skills");
     }
     const updatedUser = await User.findByIdAndUpdate(userId, data, {
       new: true, // return updated document
