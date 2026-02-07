@@ -7,6 +7,7 @@ import bcrypt from "bcrypt"
 import validator from "validator"
 import cookieParser from "cookie-parser"
 import jwt from "jsonwebtoken"
+import { userAuth } from "./middlewares/auth.js";
 
 dotenv.config();
 
@@ -96,19 +97,10 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", async(req, res)=>{
+app.get("/profile", userAuth ,async(req, res)=>{
   try{
-      const cookie = req.cookies
-
-      const {token} = cookie
-
-      if (!token) {
-        throw new Error("Please Login First")
-      }
-  const isTokenValid = await jwt.verify(token, JWT_KEY)
-
-  const {_id} = isTokenValid
-  const user = await User.findById({_id})
+     
+  const user = req.user
 
   if(!user){
     throw new Error("User Not Found")
@@ -130,7 +122,7 @@ app.get("/profile", async(req, res)=>{
 })
 
 // Get specific user by email
-app.get("/user", async (req, res) => {
+app.get("/user", userAuth , async (req, res) => {
   const userEmail = req.body.email;
 
   try {
@@ -161,7 +153,7 @@ app.get("/all-users", async (req, res) => {
 });
 
 // Delete a user API
-app.delete("/user", async (req, res) => {
+app.delete("/user",userAuth , async (req, res) => {
   const userId = req.body.userId;
 
   try {
@@ -174,7 +166,7 @@ app.delete("/user", async (req, res) => {
 });
 
 // Update the user
-app.patch("/user", async (req, res) => {
+app.patch("/user",userAuth , async (req, res) => {
   const { userId, ...data } = req.body;
 
   try {
