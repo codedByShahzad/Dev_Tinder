@@ -4,6 +4,7 @@ import connectDB from "./config/database.js";
 import { User } from "./models/userModel.js";
 import { validateSignUp } from "./utils/userValidation.js";
 import bcrypt from "bcrypt"
+import validator from "validator"
 
 dotenv.config();
 
@@ -51,35 +52,43 @@ app.post("/signup", async (req, res) => {
   }
 });
 
-app.post("/login", async (req, res)=>{
-  try{
-    const {email, password} = req.body
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // validate email
     if (!validator.isEmail(email)) {
-      throw new Error("Please Enter a Valid Email")
+      throw new Error("Invalid Credientials");
     }
 
-    const user = await User.findOne({email: email})
+    // find user
+    const user = await User.findOne({ email });
 
     if (!user) {
-      throw new Error ("Email Not Found in Database")
+      throw new Error("User not found");
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password)
-    if(isPasswordValid){
-      res.send("Login Successfull!!! ")
+    // compare password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      throw new Error("Invalid Credientials");
     }
 
+    // success
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+    });
 
   } catch (err) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: "Error saving the user",
-      error: err.message, // 👈 THIS shows in Postman
+      message: err.message,
     });
   }
+});
 
-
-})
 
 // Get specific user by email
 app.get("/user", async (req, res) => {
