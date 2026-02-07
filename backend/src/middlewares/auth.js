@@ -21,6 +21,8 @@ export const userAuth = async (req, res, next) => {
     // 2️⃣ Verify token
     const decodedToken = jwt.verify(token, JWT_KEY);
 
+
+
     // 3️⃣ Find user
     const user = await User.findById(decodedToken._id);
 

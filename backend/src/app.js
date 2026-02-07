@@ -3,40 +3,41 @@ import dotenv from "dotenv";
 import connectDB from "./config/database.js";
 import { User } from "./models/userModel.js";
 import { validateSignUp } from "./utils/userValidation.js";
-import bcrypt from "bcrypt"
-import validator from "validator"
-import cookieParser from "cookie-parser"
-import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt";
+import validator from "validator";
+import cookieParser from "cookie-parser";
+import jwt from "jsonwebtoken";
 import { userAuth } from "./middlewares/auth.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
-const JWT_KEY = process.env.JWT_SECRET
+const JWT_KEY = process.env.JWT_SECRET;
 
 app.use(express.json());
-app.use(cookieParser())
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
   // Step 1 => Validation of the Data comming form the Body Dont trust the req.body because the attackers can send millecious data
   try {
-    validateSignUp(req);    
+    validateSignUp(req);
 
-    const {firstName, lastName, email, password, skills, age, gender} = req.body
+    const { firstName, lastName, email, password, skills, age, gender } =
+      req.body;
     // Step 2 => Encrypt the password
 
-    const passwordHash = await bcrypt.hash(password, 10)
+    const passwordHash = await bcrypt.hash(password, 10);
 
     // Step 3 => Then you can add the user in the Database after the
     const user = new User({
-      firstName, 
+      firstName,
       lastName,
       email,
       skills,
       age,
       gender,
-      password: passwordHash
+      password: passwordHash,
     });
 
     if (req.body.skills?.length > 20) {
@@ -80,15 +81,14 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credientials");
     }
 
-    const token = await jwt.sign({_id:user._id},JWT_KEY)
-    console.log(token)
-    res.cookie("token", token)
+    const token = await jwt.sign({ _id: user._id }, JWT_KEY);
+    console.log(token);
+    res.cookie("token", token);
     // success
     res.status(200).json({
       success: true,
       message: "Login successful",
     });
-
   } catch (err) {
     res.status(400).json({
       success: false,
@@ -97,32 +97,34 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.get("/profile", userAuth ,async(req, res)=>{
-  try{
-     
-  const user = req.user
+app.get("/profile", userAuth, async (req, res) => {
+  try {
+    const user = req.user;
 
-  if(!user){
-    throw new Error("User Not Found")
-  }
+    if (!user) {
+      throw new Error("User Not Found");
+    }
 
-
-  res.json({
-  message: "User Profile",
-  user: user,
-})
-} catch (err) {
+    res.json({
+      message: "User Profile",
+      user: user,
+    });
+  } catch (err) {
     res.status(400).json({
       success: false,
       message: err.message,
     });
   }
+});
 
+app.post("/send-connection-request", userAuth, async (req, res) => {
+  const user = req.user;
 
-})
+  res.send(user.firstName + " is sending the Connection Request");
+});
 
 // Get specific user by email
-app.get("/user", userAuth , async (req, res) => {
+app.get("/user", userAuth, async (req, res) => {
   const userEmail = req.body.email;
 
   try {
@@ -153,7 +155,7 @@ app.get("/all-users", async (req, res) => {
 });
 
 // Delete a user API
-app.delete("/user",userAuth , async (req, res) => {
+app.delete("/user", userAuth, async (req, res) => {
   const userId = req.body.userId;
 
   try {
@@ -166,7 +168,7 @@ app.delete("/user",userAuth , async (req, res) => {
 });
 
 // Update the user
-app.patch("/user",userAuth , async (req, res) => {
+app.patch("/user", userAuth, async (req, res) => {
   const { userId, ...data } = req.body;
 
   try {
