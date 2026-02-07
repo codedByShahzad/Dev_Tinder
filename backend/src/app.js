@@ -81,7 +81,8 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credientials");
     }
 
-    const token = await jwt.sign({ _id: user._id }, JWT_KEY);
+    // const token = await jwt.sign({ _id: user._id }, JWT_KEY);
+    const token = user.getJWT()
     console.log(token);
     res.cookie("token", token);
     // success

@@ -1,4 +1,9 @@
 import mongoose from "mongoose";
+import { jwt } from 'jsonwebtoken'
+import dotenv from "dotenv"
+import { bcrypt } from 'bcrypt';
+
+const JWT_KEY = process.env.JWT_SECRET
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -44,6 +49,14 @@ const userSchema = new mongoose.Schema({
 }, {
     timestamps: true
 })
+
+userSchema.methods.getJWT = async function  (){
+    const user = this
+    const token = await jwt.sign({_id: user._id}, JWT_KEY, { expiresIn: "7d"})
+
+    return token
+}
+
 
 // This is the user Collection that will be shown in Mongo DB Compass as devTinder(Database)/User(Collection)/data of the users in Document Form
 export const User = mongoose.model("User", userSchema)
