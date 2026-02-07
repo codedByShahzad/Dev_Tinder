@@ -5,13 +5,17 @@ import { User } from "./models/userModel.js";
 import { validateSignUp } from "./utils/userValidation.js";
 import bcrypt from "bcrypt"
 import validator from "validator"
+import cookieParser from "cookie-parser"
+import jwt from "jsonwebtoken"
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
+const JWT_KEY = process.env.JWT_SECRET
 
 app.use(express.json());
+app.use(cookieParser())
 
 app.post("/signup", async (req, res) => {
   // Step 1 => Validation of the Data comming form the Body Dont trust the req.body because the attackers can send millecious data
@@ -75,6 +79,9 @@ app.post("/login", async (req, res) => {
       throw new Error("Invalid Credientials");
     }
 
+    const token = await jwt.sign({_id:user._id},JWT_KEY)
+    console.log(token)
+    res.cookie("token", token)
     // success
     res.status(200).json({
       success: true,
@@ -89,6 +96,38 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/profile", async(req, res)=>{
+  try{
+      const cookie = req.cookies
+
+      const {token} = cookie
+
+      if (!token) {
+        throw new Error("Please Login First")
+      }
+  const isTokenValid = await jwt.verify(token, JWT_KEY)
+
+  const {_id} = isTokenValid
+  const user = await User.findById({_id})
+
+  if(!user){
+    throw new Error("User Not Found")
+  }
+
+
+  res.json({
+  message: "User Profile",
+  user: user,
+})
+} catch (err) {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+
+})
 
 // Get specific user by email
 app.get("/user", async (req, res) => {
