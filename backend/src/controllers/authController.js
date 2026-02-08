@@ -76,7 +76,6 @@ export const loginController = async (req, res) => {
 
     const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: "7d" });
 
-    console.log(token);
     res.cookie("token", token);
     res.json({
       success: true,
