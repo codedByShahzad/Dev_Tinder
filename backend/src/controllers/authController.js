@@ -85,3 +85,19 @@ export const loginController = async (req, res) => {
     res.status(404).send("Error During Log In: " + err.message);
   }
 };
+
+export const logoutController = async (req, res) =>{
+  try {
+   res.cookie("token", null, {
+    expires: new Date(Date.now())
+   })
+
+   res.json({
+    success: false,
+    message: "Logout Successfull"
+   })
+
+  } catch (error) {
+    res.status(404).send("Error During Log Out: " + err.message);
+  }
+}

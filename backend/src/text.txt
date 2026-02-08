@@ -1,210 +1,210 @@
 
-// app.post("/signup", async (req, res) => {
-//   // Step 1 => Validation of the Data comming form the Body Dont trust the req.body because the attackers can send millecious data
-//   try {
-//     validateSignUp(req);
+  app.post("/signup", async (req, res) => {
+      Step 1 => Validation of the Data comming form the Body Dont trust the req.body because the attackers can send millecious data
+    try {
+      validateSignUp(req);
 
-//     const { firstName, lastName, email, password, skills, age, gender } =
-//       req.body;
-//     // Step 2 => Encrypt the password
+      const { firstName, lastName, email, password, skills, age, gender } =
+        req.body;
+        Step 2 => Encrypt the password
 
-//     const passwordHash = await bcrypt.hash(password, 10);
+      const passwordHash = await bcrypt.hash(password, 10);
 
-//     // Step 3 => Then you can add the user in the Database after the
-//     const user = new User({
-//       firstName,
-//       lastName,
-//       email,
-//       skills,
-//       age,
-//       gender,
-//       password: passwordHash,
-//     });
+        Step 3 => Then you can add the user in the Database after the
+      const user = new User({
+        firstName,
+        lastName,
+        email,
+        skills,
+        age,
+        gender,
+        password: passwordHash,
+      });
 
-//     if (req.body.skills?.length > 20) {
-//       throw new Error("Cannot add more than 20 skills");
-//     }
+      if (req.body.skills?.length > 20) {
+        throw new Error("Cannot add more than 20 skills");
+      }
 
-//     await user.save();
-//     res.status(201).json({
-//       success: true,
-//       message: "User Added Successfully",
-//     });
-//   } catch (err) {
-//     res.status(500).json({
-//       success: false,
-//       message: "Error saving the user",
-//       error: err.message, // 👈 THIS shows in Postman
-//     });
-//   }
-// });
+      await user.save();
+      res.status(201).json({
+        success: true,
+        message: "User Added Successfully",
+      });
+    } catch (err) {
+      res.status(500).json({
+        success: false,
+        message: "Error saving the user",
+        error: err.message,   👈 THIS shows in Postman
+      });
+    }
+  });
 
-// app.post("/login", async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
+  app.post("/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
 
-//     // validate email
-//     if (!validator.isEmail(email)) {
-//       throw new Error("Invalid Credientials");
-//     }
+        validate email
+      if (!validator.isEmail(email)) {
+        throw new Error("Invalid Credientials");
+      }
 
-//     // find user
-//     const user = await User.findOne({ email });
+        find user
+      const user = await User.findOne({ email });
 
-//     if (!user) {
-//       throw new Error("User not found");
-//     }
+      if (!user) {
+        throw new Error("User not found");
+      }
 
-//     // compare password
-//     const isPasswordValid = await bcrypt.compare(password, user.password);
+        compare password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
-//     if (!isPasswordValid) {
-//       throw new Error("Invalid Credientials");
-//     }
+      if (!isPasswordValid) {
+        throw new Error("Invalid Credientials");
+      }
 
-//     const token = await jwt.sign({ _id: user._id }, JWT_KEY);
-//     // const token = user.getJWT()
-//     console.log(token);
-//     res.cookie("token", token);
-//     // success
-//     res.status(200).json({
-//       success: true,
-//       message: "Login successful",
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// });
+      const token = await jwt.sign({ _id: user._id }, JWT_KEY);
+        const token = user.getJWT()
+      console.log(token);
+      res.cookie("token", token);
+        success
+      res.status(200).json({
+        success: true,
+        message: "Login successful",
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  });
 
-// app.get("/profile", userAuth, async (req, res) => {
-//   try {
-//     const user = req.user;
+  app.get("/profile", userAuth, async (req, res) => {
+    try {
+      const user = req.user;
 
-//     if (!user) {
-//       throw new Error("User Not Found");
-//     }
+      if (!user) {
+        throw new Error("User Not Found");
+      }
 
-//     res.json({
-//       message: "User Profile",
-//       user: user,
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       success: false,
-//       message: err.message,
-//     });
-//   }
-// });
+      res.json({
+        message: "User Profile",
+        user: user,
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: err.message,
+      });
+    }
+  });
 
-// app.post("/send-connection-request", userAuth, async (req, res) => {
-//   const user = req.user;
+  app.post("/send-connection-request", userAuth, async (req, res) => {
+    const user = req.user;
 
-//   res.send(user.firstName + " is sending the Connection Request");
-// });
+    res.send(user.firstName + " is sending the Connection Request");
+  });
 
-// // Get specific user by email
-// app.get("/user", userAuth, async (req, res) => {
-//   const userEmail = req.body.email;
+    Get specific user by email
+  app.get("/user", userAuth, async (req, res) => {
+    const userEmail = req.body.email;
 
-//   try {
-//     const filteredUser = await User.findOne({ email: userEmail });
+    try {
+      const filteredUser = await User.findOne({ email: userEmail });
 
-//     if (filteredUser.length === 0) {
-//       res.status(404).send("User Not Found");
-//     }
-//     res.send(filteredUser);
-//     console.log(filteredUser);
-//   } catch (err) {
-//     res.status(400).send("Error Getting a User: ", err.message);
-//   }
-// });
+      if (filteredUser.length === 0) {
+        res.status(404).send("User Not Found");
+      }
+      res.send(filteredUser);
+      console.log(filteredUser);
+    } catch (err) {
+      res.status(400).send("Error Getting a User: ", err.message);
+    }
+  });
 
-// // Get all the users
-// app.get("/all-users", async (req, res) => {
-//   try {
-//     const allUsers = await User.find({});
+    Get all the users
+  app.get("/all-users", async (req, res) => {
+    try {
+      const allUsers = await User.find({});
 
-//     if (allUsers.length === 0) {
-//       res.status(404).send("Users Not Found");
-//     }
-//     res.send(allUsers);
-//   } catch (err) {
-//     res.status(400).send("Error Getting a User: ", err.message);
-//   }
-// });
+      if (allUsers.length === 0) {
+        res.status(404).send("Users Not Found");
+      }
+      res.send(allUsers);
+    } catch (err) {
+      res.status(400).send("Error Getting a User: ", err.message);
+    }
+  });
 
-// // Delete a user API
-// app.delete("/user", userAuth, async (req, res) => {
-//   const userId = req.body.userId;
+    Delete a user API
+  app.delete("/user", userAuth, async (req, res) => {
+    const userId = req.body.userId;
 
-//   try {
-//     // const user = await User.findByIdAndDelete({_id: userId}) we can use this and also the below is the short form of this line
-//     const user = await User.findByIdAndDelete(userId);
-//     res.send("User Deleted Successfully");
-//   } catch (err) {
-//     res.status(400).send("Error Getting a User: ", err.message);
-//   }
-// });
+    try {
+        const user = await User.findByIdAndDelete({_id: userId}) we can use this and also the below is the short form of this line
+      const user = await User.findByIdAndDelete(userId);
+      res.send("User Deleted Successfully");
+    } catch (err) {
+      res.status(400).send("Error Getting a User: ", err.message);
+    }
+  });
 
-// // Update the user
-// app.patch("/user", userAuth, async (req, res) => {
-//   const { userId, ...data } = req.body;
+    Update the user
+  app.patch("/user", userAuth, async (req, res) => {
+    const { userId, ...data } = req.body;
 
-//   try {
-//     const allowedUpdates = [
-//       "photoUrl",
-//       "about",
-//       "gender",
-//       "age",
-//       "skills",
-//       "firstName",
-//       "lastName",
-//     ];
+    try {
+      const allowedUpdates = [
+        "photoUrl",
+        "about",
+        "gender",
+        "age",
+        "skills",
+        "firstName",
+        "lastName",
+      ];
 
-//     const isUpdateAllowed = Object.keys(data).every((k) => {
-//       allowedUpdates.includes(k);
-//     });
+      const isUpdateAllowed = Object.keys(data).every((k) => {
+        allowedUpdates.includes(k);
+      });
 
-//     if (!isUpdateAllowed) {
-//       throw new Error("Update not Allowed");
-//     }
+      if (!isUpdateAllowed) {
+        throw new Error("Update not Allowed");
+      }
 
-//     if (data.skills.length > 20) {
-//       throw new Error("Cannot add more than 20 skills");
-//     }
-//     const updatedUser = await User.findByIdAndUpdate(userId, data, {
-//       new: true, // return updated document
-//       runValidators: true, // ✅ run schema validators on update
-//     });
+      if (data.skills.length > 20) {
+        throw new Error("Cannot add more than 20 skills");
+      }
+      const updatedUser = await User.findByIdAndUpdate(userId, data, {
+        new: true,   return updated document
+        runValidators: true,   ✅ run schema validators on update
+      });
 
-//     if (!updatedUser) {
-//       return res
-//         .status(404)
-//         .json({ success: false, message: "User not found" });
-//     }
+      if (!updatedUser) {
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+      }
 
-//     res.json({
-//       success: true,
-//       message: "User Updated Successfully",
-//       user: updatedUser,
-//     });
-//   } catch (err) {
-//     res.status(400).json({
-//       success: false,
-//       message: "Validation / Update error",
-//       error: err.message,
-//     });
-//   }
-// });
+      res.json({
+        success: true,
+        message: "User Updated Successfully",
+        user: updatedUser,
+      });
+    } catch (err) {
+      res.status(400).json({
+        success: false,
+        message: "Validation / Update error",
+        error: err.message,
+      });
+    }
+  });
 
 
  
 export const userAuth = async (req, res, next) => {
   try {
-    // 1️⃣ Read token from cookies
+      1️⃣ Read token from cookies
     const { token } = req.cookies;
 
     if (!token) {
@@ -214,12 +214,12 @@ export const userAuth = async (req, res, next) => {
       })
     }
 
-    // 2️⃣ Verify token
+      2️⃣ Verify token
     const decodedToken = jwt.verify(token, JWT_KEY);
 
 
 
-    // 3️⃣ Find user
+      3️⃣ Find user
     const user = await User.findById(decodedToken._id);
 
     if (!user) {
@@ -229,7 +229,7 @@ export const userAuth = async (req, res, next) => {
       });
     }
 
-    // 4️⃣ Attach user to request
+      4️⃣ Attach user to request
     req.user = user;
     next();
   } catch (err) {
