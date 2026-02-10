@@ -37,7 +37,7 @@ export const sendRequest = async (req, res) => {
     })
 
     if (existingConnectionRequest) {
-        return res.status(404),json({
+        return res.status(404).json({
             message: "Connection Request Already Exists !"
         })
     }
@@ -52,7 +52,7 @@ export const sendRequest = async (req, res) => {
     
     res.json({
         success: true,
-        message: "Connection Request Send Successfully",
+        message: req.user.firstName+ " is " +status+ " in " + checkToUserExist.firstName,
         data
     })
 
