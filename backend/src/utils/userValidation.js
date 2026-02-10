@@ -25,6 +25,4 @@ export const validateSignUp = (req) =>{
 
 }
 
-export const validateProfileData = async(req) =>{
-    
-}
+
