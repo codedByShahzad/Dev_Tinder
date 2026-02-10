@@ -4,7 +4,8 @@ import connectDB from "./config/database.js";
 import cookieParser from "cookie-parser";
 
 import { authRouter } from "./routes/authRoutes.js";
-import userProfileRoutes from "./routes/userProfileRoutes.js"
+import userProfileRoutes from "./routes/userProfileRoutes.js";
+import request from "./routes/request.js";
 
 dotenv.config();
 
@@ -14,9 +15,9 @@ const PORT = process.env.PORT;
 app.use(express.json());
 app.use(cookieParser());
 
-
-app.use(authRouter)
-app.use(userProfileRoutes)
+app.use(authRouter);
+app.use(userProfileRoutes);
+app.use("/request", request);
 
 connectDB()
   .then(() => {
