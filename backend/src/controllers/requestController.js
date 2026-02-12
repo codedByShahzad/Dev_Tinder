@@ -119,3 +119,35 @@ export const reviewRequest = async (req, res) => {
 
   }
 };
+
+
+export const viewAllRequests = async (req, res) =>{
+    try {
+        const loggedInUser = req.user
+
+        const connectionRequest = await ConnectionRequest.find({
+            toUserId: loggedInUser._id,
+            status: "interested"
+        }).populate("fromUserId", ["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
+        
+       
+
+        if (connectionRequest.length == 0) {
+            return res.json({
+                success: true,
+                message: "No Request Avalible"
+            })
+        }
+
+        res.json({
+            success: true,
+            message: connectionRequest
+        })
+
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "Cannot View the Requests: "+ error.message
+        })
+    }
+}
