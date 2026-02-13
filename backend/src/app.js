@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(authRouter);
 app.use(userProfileRoutes);
 app.use("/request", request);
-app.use(viewRequests)
+app.use("/user",viewRequests)
 
 connectDB()
   .then(() => {

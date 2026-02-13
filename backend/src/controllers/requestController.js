@@ -128,7 +128,8 @@ export const viewAllRequests = async (req, res) =>{
         const connectionRequest = await ConnectionRequest.find({
             toUserId: loggedInUser._id,
             status: "interested"
-        }).populate("fromUserId", ["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
+        }).populate(["toUserId", "fromUserId"], ["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
+        // }).populate("fromUserId", ["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
         
        
 
@@ -150,4 +151,43 @@ export const viewAllRequests = async (req, res) =>{
             message: "Cannot View the Requests: "+ error.message
         })
     }
+}
+
+export const viewAllConnections = async(req, res) =>{
+
+    try {
+        const loggedInUser = req.user
+
+        const connectionRequest = await ConnectionRequest.find({
+            $or: [
+               {toUserId: loggedInUser._id , status: "accepted"},
+               {fromUserId: loggedInUser._id , status: "accepted"}
+            ]
+        }).populate(["toUserId", "fromUserId"],  ["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
+
+        // Filtering only fromUserId Data
+        const data = connectionRequest.map((row)=> row.fromUserId)
+
+        res.json({data: data})
+        
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            message: "Error Viewing All Connections"
+        })
+    }
+
+}
+
+export const viewFeed = async(req, res) =>{
+
+  try {
+    
+  } catch (error) {
+    res.status(404).json({
+      success: false,
+      message: "Cannot Get User Feed: " + error.message
+    })
+  }
+
 }
