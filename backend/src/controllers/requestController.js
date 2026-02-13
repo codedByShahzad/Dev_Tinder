@@ -182,6 +182,39 @@ export const viewAllConnections = async(req, res) =>{
 export const viewFeed = async(req, res) =>{
 
   try {
+    const loggedInUser  = req.user
+
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const skip = (page-1)*limit
+
+    // Find all Connections Request that I have Send or recived
+    const connectionRequest = await ConnectionRequest.find({
+      $or: [
+        {fromUserId: loggedInUser._id},
+        {toUserId: loggedInUser._id}
+      ]
+    }).select(["fromUserId", "toUserId"])
+
+    const hideUserFromFeed = new Set()  // Set() is the data structures that takes Element in a array but if the same eleemnt repets then it will not store that element
+    connectionRequest.forEach(req =>{
+      hideUserFromFeed.add(req.fromUserId.toString())
+      hideUserFromFeed.add(req.toUserId.toString())
+    })
+
+    const user = await User.find({
+      $and: [
+        {_id: {$nin: Array.from(hideUserFromFeed)}},
+        {_id: {$ne: loggedInUser._id}}
+      ]
+    }).select(["firstName", "lastName", "photoUrl", "gender", "age", "skills"])
+      .skip(skip)
+      .limit(limit)
+
+    res.json({
+      data: user
+    })
+
     
   } catch (error) {
     res.status(404).json({
@@ -191,3 +224,4 @@ export const viewFeed = async(req, res) =>{
   }
 
 }
+
