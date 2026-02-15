@@ -80,6 +80,7 @@ export const loginController = async (req, res) => {
     res.json({
       success: true,
       message: "Login Successfull",
+      data: user
     });
   } catch (err) {
     res.status(404).send("Error During Log In: " + err.message);

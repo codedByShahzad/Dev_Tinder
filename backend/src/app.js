@@ -7,12 +7,17 @@ import { authRouter } from "./routes/authRoutes.js";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 import viewRequests from "./routes/user.js";
 import request from "./routes/request.js";
+import cors from "cors"
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT;
 
+app.use(cors({
+  origin: "http://localhost:3000",  // used to get cookie token during development
+  credentials: true
+}))
 app.use(express.json());
 app.use(cookieParser());
 
