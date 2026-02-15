@@ -5,11 +5,11 @@ const LoginPage = () => {
     <main className="min-h-screen bg-[#070A12] text-white">
       {/* Background */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-fuchsia-500/25 blur-3xl" />
-        <div className="absolute -bottom-44 left-16 h-[520px] w-[520px] rounded-full bg-cyan-400/20 blur-3xl" />
-        <div className="absolute top-20 right-10 h-[420px] w-[420px] rounded-full bg-indigo-500/20 blur-3xl" />
+        <div className="absolute -top-40 left-1/2 h-130 w-130 -translate-x-1/2 rounded-full bg-fuchsia-500/25 blur-3xl" />
+        <div className="absolute -bottom-44 left-16 h-130 w-130 rounded-full bg-cyan-400/20 blur-3xl" />
+        <div className="absolute top-20 right-10 h-105 w-105 rounded-full bg-indigo-500/20 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.10),transparent_60%)]" />
-        <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,.2)_1px,transparent_1px)] [background-size:48px_48px]" />
+        <div className="absolute inset-0 opacity-[0.12] bg-[linear-gradient(to_right,rgba(255,255,255,.2)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,.2)_1px,transparent_1px)] bg-size-[48px_48px]" />
       </div>
 
       {/* Content */}
@@ -24,7 +24,7 @@ const LoginPage = () => {
 
             <h1 className="mt-5 text-5xl font-semibold leading-[1.05] tracking-tight">
               DevTinder
-              <span className="block bg-gradient-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
+              <span className="block bg-linear-to-r from-fuchsia-400 via-indigo-300 to-cyan-300 bg-clip-text text-transparent">
                 Pair. Chat. Build.
               </span>
             </h1>

@@ -123,7 +123,7 @@ const LoginCard = () => {
   type="submit"
   disabled={isPending}
   className="h-14 w-full rounded-2xl
-             bg-gradient-to-r from-fuchsia-600 via-indigo-600 to-cyan-600
+             bg-linear-to-r from-fuchsia-600 via-indigo-600 to-cyan-600
              text-white font-semibold text-lg
              hover:brightness-110 hover:shadow-xl
              active:scale-95
